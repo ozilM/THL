@@ -1,0 +1,173 @@
+// Online C compiler to run C program online
+#include <stdio.h>
+#include <stdlib.h>
+#include<windows.h>
+typedef struct etat {
+int init; int fini;
+struct etat *succ;
+} etat;
+typedef struct transition {
+char transition[1];
+etat *tete_etat;
+struct transition *succ;
+}
+transition;
+typedef transition *TRANSITION; 
+typedef etat *ETAT;
+TRANSITION adf() {
+// Ici on fait la construction de notre automate.
+ int repreduit(ETAT tete_etat, int init, ETAT transitionTete);
+
+ char condition1[3], condition2[3];
+  transition *transitionTete = NULL;
+   transition*transition2; etat *p_etat; 
+   transition *suiv = NULL; etat *refirance = NULL;
+   int l = 0;
+
+do
+{
+transition2 = (transition *)malloc(sizeof(transition));
+printf("Donnez une transition un caractere 'a'\n");
+scanf("%s",(*transition2).transition);
+if (transitionTete == NULL)
+transition2->tete_etat = NULL;
+else
+{
+transition2->tete_etat = transitionTete->tete_etat;
+refirance = transitionTete->tete_etat;
+}
+do
+{
+p_etat = (etat *)malloc(sizeof(etat));
+do
+{
+printf("Donnez etat initial\n");
+scanf("%i", &(*p_etat).init);
+l = repreduit(transition2->tete_etat, p_etat->init, refirance);if (l == 1)
+printf("ERREUR, Il existe deja une transition commencant de cette etat init\n");
+} while (l != 0);
+printf("Donnez etat final\n");
+scanf("%i",&(*p_etat).fini);
+p_etat->succ = transition2->tete_etat;
+(*transition2).tete_etat = p_etat;
+printf("Voulez vous ajouter d'autres etats pour cette transition ?(oui/non)\n");
+
+scanf("%s",condition1);
+l = strcmp(condition1, "non");
+} while (l != 0);
+(*transition2).succ = transitionTete;
+transitionTete = transition2;
+printf("Voulez vous ajouter d'autres transitions ? (oui/non)\n");
+scanf("%s", condition2);
+l = strcmp(condition2, "non");
+} while (l != 0);
+transition2 = transitionTete;
+do
+{
+suiv = transition2->succ;
+do
+{
+printf("%s\t",transition2->transition);
+printf("%i\t",p_etat->init);
+printf("%i\t",p_etat->fini);
+printf("\n");
+p_etat = p_etat->succ;
+if ((suiv == NULL) ||(p_etat != suiv->tete_etat))
+l = 1;
+else
+l = 0;
+} while ((p_etat != NULL) && l != 0);
+transition2 = transition2->succ;
+} while (p_etat != NULL);
+return transitionTete;//(transition)ete_transition
+}int repreduit(etat *tete_etat, int init, etat *refirance)
+{ // Ici on verifie est ce que une transition a une etat initiale identique Ã celui qu'on a juste tapez.
+int repreduit = 0;
+while ((tete_etat != NULL) && (repreduit == 0) && (tete_etat != refirance))
+{
+if (tete_etat->init == init)repreduit = 1;
+else
+tete_etat = tete_etat->succ;
+}
+return repreduit;
+}
+char *mot()
+{
+// Ici se fait la construction du mot qu'on va vÃ©rifier avec l'AFD.
+int nb, i;
+char *tab;
+printf("Donnez la taille du mot\n");
+scanf("%d",&nb);
+tab = (char *)malloc((nb + 1) * sizeof(char));
+for (i = 0; i < nb; i++)
+{
+printf("Donner la lettre %d \n", i + 1);
+scanf("%s",&tab[i]);
+}
+tab[nb] ='\0';
+return &tab[0];
+}
+char check(char *adrtab, transition adrtransition){
+int res = 0, trouv = 1, i = 0;
+// Ici on vÃ©rifie l'appartenance du notre mot au language de notre automate.
+int etatinit, v = 0;
+transition *ptrtransition = &adrtransition;
+etat *ptretat;
+etat *refirance = NULL;
+printf("Donner etat de initial \n");
+scanf("%i", &etatinit);
+while (res == 0 && trouv == 1)
+{
+do
+{
+if ((*ptrtransition).transition[0] == adrtab[i])
+{
+v = 1;
+ptretat = ptrtransition->tete_etat;
+if (ptrtransition->succ != NULL)
+refirance = (*ptrtransition).succ->tete_etat;
+}else
+ptrtransition = (*ptrtransition).succ;
+} while ((v != 1) && (ptrtransition != NULL));
+if (ptrtransition == NULL)
+trouv = 9;
+else
+{
+i++;
+do if ((*ptretat).init == etatinit)
+{
+v = 2;
+etatinit = (*ptretat).fini;
+}
+else
+ptretat = (*ptretat).succ;
+while ((v != 2) && (ptretat != NULL) && (ptretat != refirance));
+if ((ptretat == NULL)&& (ptretat == refirance))
+trouv = 0;
+else if (adrtab[i] == '\0')
+res = 1;
+ptrtransition = &adrtransition;
+} }
+if (res == 1)
+return etatinit;
+else
+{
+printf("Mot rejetÃ©\n");
+return -1;
+} }
+int main()
+{
+// C'est la fonction main.
+char rep[3];
+int final[1], i, nb;
+transition k = *(adf());do {
+char *tab = mot(); printf("Votre mot est => %s <=. On va le tester maintenant !!!\n",tab); int s =
+check(tab, k); if (s != -1) {
+printf("Donnez le nombre des etats finaux\n"); scanf("%i", &nb); for (i = 0; i < nb; i++) {
+printf("Donnez etat final %i\n", i + 1); scanf("%i", &final[i]); }
+do {
+	i--; if (s == final[i]) printf("Mot Accepte\n"); } while ((i >= 0) && (s != final[i])); if (i < 0)
+printf("\nMot rejete"); }
+printf("Voulez vous essayez un autre mot ? (oui/non)\n"); scanf("%s", rep); } while (strcmp(rep,
+"non") != 0); return 0;
+}
